@@ -5,18 +5,24 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    
     steps:
       - uses: actions/checkout@v4
       
       - name: Build Docker image
-        run: docker build -t lab8-image .
+        run: |
+          echo "=== Содержимое Dockerfile ==="
+          cat Dockerfile
+          docker build -t lab8-image .
         
       - name: Run container
         run: |
           mkdir -p output
           docker run --rm -v $(pwd)/output:/app/output lab8-image
-          cat output/output.log
+          echo "=== Логи контейнера ==="
+          cat output/output.log || echo "Логи не найдены"
+          
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-logs
+          path: output/

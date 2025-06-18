@@ -1,0 +1,22 @@
+name: Docker CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Docker image
+        run: docker build -t lab8-image .
+        
+      - name: Run container
+        run: |
+          mkdir -p output
+          docker run --rm -v $(pwd)/output:/app/output lab8-image
+          cat output/output.log
